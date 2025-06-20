@@ -92,6 +92,7 @@ jobs:
         cd openwrt
         make defconfig
         make download -j8
+        wget -P dl https://github.com/padavanonly/immortalwrt-mt798x-24.10/raw/refs/heads/2410/dl/datconf-6bb733f7.tar.bz2
         find dl -size -1024c -exec ls -l {} \;
         find dl -size -1024c -exec rm -f {} \;
 
