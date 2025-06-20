@@ -1,0 +1,77 @@
+diff -uprN a/target/linux/mediatek/dts/mt7981b-jcg-q30-pro.dts b/target/linux/mediatek/dts/mt7981b-jcg-q30-pro.dts
+--- a/target/linux/mediatek/dts/mt7981b-jcg-q30-pro.dts	2025-06-20 16:01:45.256420562 +0800
++++ b/target/linux/mediatek/dts/mt7981b-jcg-q30-pro.dts	2025-06-20 14:15:22.151031000 +0800
+@@ -21,8 +21,6 @@
+ 	};
+ 
+ 	chosen {
+-		bootargs-append = " root=/dev/fit0 rootwait";
+-		rootdisk = <&ubi_rootdisk>;
+ 		stdout-path = "serial0:115200n8";
+ 	};
+ 
+@@ -108,6 +106,10 @@
+ 
+ 		spi-tx-bus-width = <4>;
+ 		spi-rx-bus-width = <4>;
++		
++		mediatek,nmbm;
++                mediatek,bmt-max-ratio = <1>;
++                mediatek,bmt-max-reserved-blocks = <64>;
+ 
+ 		partitions {
+ 			compatible = "fixed-partitions";
+@@ -159,13 +161,6 @@
+ 			ubi: partition@580000 {
+ 				label = "ubi";
+ 				reg = <0x0580000 0x7000000>;
+-				compatible = "linux,ubi";
+-
+-				volumes {
+-					ubi_rootdisk: ubi-volume-fit {
+-						volname = "fit";
+-					};
+-				};
+ 			};
+ 		};
+ 	};
+diff -uprN a/target/linux/mediatek/image/filogic.mk b/target/linux/mediatek/image/filogic.mk
+--- a/target/linux/mediatek/image/filogic.mk	2025-06-20 16:10:41.906443244 +0800
++++ b/target/linux/mediatek/image/filogic.mk	2025-06-20 14:15:47.780149000 +0800
+@@ -1133,33 +1133,16 @@ define Device/imou_lc-hx3001
+ endef
+ TARGET_DEVICES += imou_lc-hx3001
+ 
+-define Device/jcg_q30-pro
++define Device/jcg_q30_pro
+   DEVICE_VENDOR := JCG
+   DEVICE_MODEL := Q30 PRO
+-  DEVICE_ALT0_VENDOR := JCG
+-  DEVICE_ALT0_MODEL := Q30
+-  DEVICE_ALT1_VENDOR := CMCC
+-  DEVICE_ALT1_MODEL := MR3000D-CIq
+-  SUPPORTED_DEVICES += jcg,q30
+   DEVICE_DTS := mt7981b-jcg-q30-pro
+   DEVICE_DTS_DIR := ../dts
+-  UBINIZE_OPTS := -E 5
+   BLOCKSIZE := 128k
+   PAGESIZE := 2048
+-  KERNEL_IN_UBI := 1
+-  UBOOTENV_IN_UBI := 1
+-  IMAGES := sysupgrade.itb
+-  KERNEL_INITRAMFS_SUFFIX := -recovery.itb
+-  KERNEL := kernel-bin | gzip
+-  KERNEL_INITRAMFS := kernel-bin | lzma | \
+-        fit lzma $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb with-initrd | pad-to 64k
+-  IMAGE/sysupgrade.itb := append-kernel | \
+-        fit gzip $$(KDIR)/image-$$(firstword $$(DEVICE_DTS)).dtb external-static-with-rootfs | append-metadata
+-  ARTIFACTS := preloader.bin bl31-uboot.fip
+-  ARTIFACT/preloader.bin := mt7981-bl2 spim-nand-ddr3
+-  ARTIFACT/bl31-uboot.fip := mt7981-bl31-uboot jcg_q30-pro
++  IMAGE/sysupgrade.bin := sysupgrade-tar | append-metadata
+ endef
+-TARGET_DEVICES += jcg_q30-pro
++TARGET_DEVICES += jcg_q30_pro
+ 
+ define Device/jdcloud_re-cp-03
+   DEVICE_VENDOR := JDCloud
