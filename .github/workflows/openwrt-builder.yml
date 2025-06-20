@@ -15,8 +15,8 @@ name: OpenWrt Builder
 on:
   repository_dispatch:
   workflow_dispatch:
-  schedule:
-    - cron: '0 0 * * 3,6'
+#  schedule:
+#    - cron: '0 0 * * 3,6'
 
 env:
   REPO_URL:  https://github.com/padavanonly/immortalwrt-mt798x-24.10
